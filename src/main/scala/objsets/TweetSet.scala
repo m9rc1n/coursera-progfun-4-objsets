@@ -1,5 +1,7 @@
 package objsets
 
+import java.util.NoSuchElementException
+
 /**
   * A class to represent tweets.
   */
@@ -54,16 +56,17 @@ abstract class TweetSet {
     * and be implemented in the subclasses?
     */
   def union(that: TweetSet): TweetSet
+
   /**
     * Returns the tweet from this set which has the greatest retweet count.
     *
     * Calling `mostRetweeted` on an empty set should throw an exception of
     * type `java.util.NoSuchElementException`.
     *
-    * Question: Should we implment this method here, or should it remain abstract
+    * Question: Should we implement this method here, or should it remain abstract
     * and be implemented in the subclasses?
     */
-  def mostRetweeted: Tweet = ???
+  def mostRetweeted: Tweet;
 
   /**
     * Returns a list containing all tweets of this set, sorted by retweet count
@@ -71,7 +74,7 @@ abstract class TweetSet {
     * have the highest retweet count.
     *
     * Hint: the method `remove` on TweetSet will be very useful.
-    * Question: Should we implment this method here, or should it remain abstract
+    * Question: Should we implement this method here, or should it remain abstract
     * and be implemented in the subclasses?
     */
   def descendingByRetweet: TweetList = ???
@@ -126,6 +129,17 @@ class Empty extends TweetSet {
   def remove(tweet: Tweet): TweetSet = this
 
   def foreach(f: Tweet => Unit): Unit = ()
+
+  /**
+    * Returns the tweet from this set which has the greatest retweet count.
+    *
+    * Calling `mostRetweeted` on an empty set should throw an exception of
+    * type `java.util.NoSuchElementException`.
+    *
+    * Question: Should we implement this method here, or should it remain abstract
+    * and be implemented in the subclasses?
+    */
+  override def mostRetweeted: Tweet = throw new NoSuchElementException
 }
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
@@ -170,6 +184,39 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     f(elem)
     left.foreach(f)
     right.foreach(f)
+  }
+
+  /**
+    * Returns the tweet from this set which has the greatest retweet count.
+    *
+    * Calling `mostRetweeted` on an empty set should throw an exception of
+    * type `java.util.NoSuchElementException`.
+    *
+    * Question: Should we implement this method here, or should it remain abstract
+    * and be implemented in the subclasses?
+    */
+  override def mostRetweeted: Tweet = {
+    lazy val mostRetweetedLeft: Tweet = left.mostRetweeted
+    lazy val mostRetweetedRight: Tweet = right.mostRetweeted
+    if (elem.retweets >= mostRetweetedLeft.retweets) {
+      if (elem.retweets >= mostRetweetedRight.retweets) {
+        elem
+      } else {
+        mostRetweetedRight
+      }
+    } else if (elem.retweets >= mostRetweetedRight.retweets) {
+      if (elem.retweets >= mostRetweetedLeft.retweets) {
+        elem
+      } else {
+        mostRetweetedLeft
+      }
+    } else {
+      if (mostRetweetedLeft.retweets >= mostRetweetedRight.retweets) {
+        mostRetweetedLeft
+      } else {
+        mostRetweetedRight
+      }
+    }
   }
 }
 
