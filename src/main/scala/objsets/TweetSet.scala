@@ -266,12 +266,13 @@ class Cons(val head: Tweet, val tail: TweetList) extends TweetList {
 object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
-  lazy val googleTweets: TweetSet = filterTweetsByWordList(google)
-  lazy val appleTweets: TweetSet = filterTweetsByWordList(apple)
 
   def filterTweetsByWordList(list: List[String]): TweetSet = {
     TweetReader.allTweets.filter(tweet => list.exists(word => tweet.text.contains(word)))
   }
+
+  lazy val googleTweets: TweetSet = filterTweetsByWordList(google)
+  lazy val appleTweets: TweetSet = filterTweetsByWordList(apple)
 
   /**
     * A list of all tweets mentioning a keyword from either apple or google,
